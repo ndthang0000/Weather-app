@@ -1,24 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+
+import React, { useEffect, useState } from 'react';
+import {  Route, Switch } from 'react-router-dom';
+import Home from './components/Home';
+import About from './components/About';
+import Shop from './components/Shop';
+import Contact from './components/Contact';
+
+
 
 function App() {
+  const apiKey='13fcd372ebe06fe9ec6291eb6b3b6522'
+  const [dataWeather,setDataWeather]=useState();
+  const fetchApi=(location)=>{
+    fetch(`http://api.openweathermap.org/data/2.5/weather?q=${location||"hanoi"}&appid=${apiKey}`)
+    .then(res=>res.json())
+    .then(res=>{setDataWeather(res)})
+  }
+  useEffect(()=>{
+      fetchApi('hanoi');
+  },[])
+  const handleLocation=(newLocation)=>{
+    fetchApi(newLocation)
+  } 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main>
+      <Switch>
+        <Route path="/" exact >
+          <Home dataWeather={dataWeather}  changLocation={handleLocation}/>
+        </Route>
+        <Route path="/about" component={About} />
+        <Route path="/shop" component={Shop} />
+        <Route path="/contact" component={Contact} />
+        <Route component={Error} />
+      </Switch>
+    </main>
   );
 }
 
